@@ -1,0 +1,35 @@
+name: tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -e ".[dev]"
+      - run: pytest
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install build
+      - run: python -m build
+      - name: Check the wheel contains the bundled boundary file
+        run: |
+          python -c "import zipfile,glob; w=glob.glob('dist/*.whl')[0]; n=zipfile.ZipFile(w).namelist(); assert any(x.endswith('geoBoundaries-AFG-ADM1_simplified.geojson') for x in n), n"
+      - name: Install the wheel and run the command outside the repository
+        run: |
+          pip install dist/*.whl
+          cd "$RUNNER_TEMP"
+          afg-province-maps check --data "$GITHUB_WORKSPACE/examples/population_2027_ocha.csv" --column population_2027

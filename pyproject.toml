@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "afg-province-maps"
+version = "0.1.0"
+description = "Map any province-level variable onto Afghanistan's provinces."
+license = "MIT"
+license-files = ["LICENSE"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+keywords = ["afghanistan", "choropleth", "province", "map", "geoboundaries"]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "matplotlib>=3.7",
+    "geopandas>=0.14",
+]
+
+[project.urls]
+Homepage = "https://github.com/thecodequestioner/afg_province_maps"
+Issues = "https://github.com/thecodequestioner/afg_province_maps/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "pillow>=10.0"]
+
+[project.scripts]
+afg-province-maps = "afg_province_maps.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.setuptools.package-data]
+afg_province_maps = ["data/boundaries/*.geojson", "data/boundaries/NOTICE.md"]

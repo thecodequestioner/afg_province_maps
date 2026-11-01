@@ -1,0 +1,7 @@
+include LICENSE
+include README.md
+include CHANGELOG.md
+include THIRD_PARTY_NOTICES.md
+include data/boundaries/README.md
+include data/boundaries/geoBoundaries-AFG-ADM1_simplified.geojson
+recursive-include src/afg_province_maps/data/boundaries *.geojson *.md

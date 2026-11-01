@@ -1,0 +1,30 @@
+{
+  "afg_province_maps_version": "0.1.0",
+  "input_file": "population_2027_ocha.csv",
+  "input_sha256": "13269ec5e0870785539f425caf207c5b79c696d4c1c7cbf94aa012258b788058",
+  "column": "population_2027",
+  "name_column": "province",
+  "legend_title": "Population (2027 estimate)",
+  "title": "Afghanistan estimated population by province, 2027",
+  "scheme": "quantile",
+  "class_edges": [
+    257993.0,
+    661314.0,
+    884587.8,
+    1276085.0000000002,
+    1856851.0000000002,
+    6654226.0
+  ],
+  "class_labels": [
+    "257,993 to 661,314",
+    "661,314 to 884,588",
+    "884,588 to 1,276,085",
+    "1,276,085 to 1,856,851",
+    "1,856,851 to 6,654,226"
+  ],
+  "cmap": "YlOrRd",
+  "provinces_mapped": 34,
+  "provinces_without_data": [],
+  "boundaries_file": "geoBoundaries-AFG-ADM1_simplified.geojson",
+  "boundaries_sha256": "c0ae276c6df08d6619ce738720ea7a052079e2cb186f1d6e2de9a1d7aef7a86b"
+}
