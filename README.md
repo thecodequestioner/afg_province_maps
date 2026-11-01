@@ -6,25 +6,17 @@ The Afghanistan ADM1 boundary GeoJSON is included in the repository and packaged
 
 ## Quick start
 
-Requires Python 3.10 or newer. From the repository directory, install the tool and development dependencies:
+Requires Python 3.10 or newer. From the repository directory, install the tool and development dependencies. If you use Anaconda, activate your environment first.
 
 ```bash
-python -m pip \
-  install -e ".[dev]"
+python -m pip install -e ".[dev]"
 ```
 
 Check the example CSV, then make a map:
 
 ```bash
-afg-province-maps check \
-  --data examples/population_2027_ocha.csv \
-  --column population_2027
-
-afg-province-maps map \
-  --data examples/population_2027_ocha.csv \
-  --column population_2027 \
-  --label "Population (2027 estimate)" \
-  --title "Afghanistan estimated population by province, 2027"
+afg-province-maps check --data examples/population_2027_ocha.csv --column population_2027
+afg-province-maps map --data examples/population_2027_ocha.csv --column population_2027 --label "Population (2027 estimate)" --title "Afghanistan estimated population by province, 2027"
 ```
 
 By default, the map command writes these files to `outputs/`:
@@ -34,7 +26,7 @@ By default, the map command writes these files to `outputs/`:
 - `population_2027.pdf`
 - `population_2027.json`
 
-Use `--out DIR` to choose another output folder, `--stem NAME` to choose a filename, or `--formats png` to write only in PNG (both the regular and transparent PNGs). HTML output is not supported.
+Use `--out DIR` to choose another output folder, `--stem NAME` to choose a filename, or `--formats png` to write only PNG files (the regular and transparent versions).
 
 ## Example
 
@@ -44,19 +36,21 @@ Made with `afg-province-maps map --data examples/population_2027_ocha.csv --colu
 
 ## Input CSV
 
-The CSV must be UTF-8 and have a header row. By default, the province names must be in a column named `province`; use `--name-column` to choose another name column. Pass the numeric column to map with `--column`. Blank numeric cells are shown as "No data". Provinces can be omitted from the CSV; they will also appear as "No data" on the map.
+The CSV must be UTF-8 and have a header row. By default, province names must be in a column called `province`. Use `--name-column` to choose a different column. Name the numeric column to map with `--column`. Other columns are ignored.
+
+Blank numeric cells are shown as "No data". Provinces can be omitted from the CSV; they also appear as "No data" on the map.
 
 ```csv
-province,loans_disbursed_usd
-Kabul,12500000
-Herat,4300000
-Balkh,2100000
+province,population_2027
+Kabul,6654226
+Herat,3958782
+Balkh,2802998
 ```
 
-Run `check` before mapping. It checks that the requested columns exist, province names are present and unique after name normalization, that every name matches a province in the boundary file, and that values are numeric. It does not draw a map.
+Run `check` before mapping. It checks that the requested columns exist, that province names are present and unique after name normalization, that every name matches a province in the boundary file, and that values are numeric. It does not draw a map.
 
 ```bash
-afg-province-maps check --data path/to/your_data.csv --column loans_disbursed_usd
+afg-province-maps check --data path/to/your_data.csv --column population_2027
 ```
 
 Known spelling variants are normalized, including `Ghanzi`/`Ghazni`, `Hilmand`/`Helmand`, and `Maidan Wardak`/`Wardak`. If a name is not recognized, `check` and `map` report it and point to `src/afg_province_maps/names.py`, where aliases can be added.
@@ -67,10 +61,10 @@ The default is five quantile classes. Quantiles put roughly the same number of p
 
 ```bash
 # Five equal-width value ranges
-afg-province-maps map --data data.csv --column value --scheme equal
+afg-province-maps map --data examples/population_2027_ocha.csv --column population_2027 --scheme equal
 
-# Use shared class edges to compare maps across years
-afg-province-maps map --data data.csv --column value --bins 0,250000,500000,1000000
+# Fixed class edges, so maps stay comparable across years
+afg-province-maps map --data examples/population_2027_ocha.csv --column population_2027 --bins 0,1000000,2000000,4000000,7000000
 ```
 
 - `--classes N` sets the number of classes for quantile or equal schemes. The default is 5.
@@ -95,17 +89,16 @@ afg-province-maps map --data FILE --column COLUMN [--name-column NAME]
 
 The PNG and PDF use the same classified values and include a legend in a separate panel at the lower right, outside the map. Provinces with no numeric value use a grey fill.
 
-The JSON sidecar records the input filename and SHA-256 hash, selected value and name columns, class method and edges, map title, colormap, boundary filename and SHA-256 hash, and provinces without data. Keep it with the map when you need to reproduce or audit the output.
+The JSON sidecar records the input filename and SHA-256 hash, the selected value and name columns, the class method and edges, the map title, the colormap, the boundary filename and SHA-256 hash, and the provinces without data. Keep it with the map when you need to reproduce or audit the output.
 
 ## Development
 
 ```bash
-python -m pip \
-  install -e ".[dev]"
+python -m pip install -e ".[dev]"
 pytest
 ```
 
-The test suite covers CSV validation, province-name normalization and matching against the boundary file, rejection of invalid `--bins` and formats, the bundled boundary data, and creation of PNG/PDF/JSON outputs using the default GeoJSON.
+The test suite covers CSV validation, province-name normalization and matching against the boundary file, rejection of invalid `--bins` and formats, the bundled boundary data, and creation of PNG, PDF, and JSON outputs using the default GeoJSON.
 
 ## Data sources and limitations
 
