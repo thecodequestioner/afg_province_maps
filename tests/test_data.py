@@ -59,3 +59,13 @@ def test_labels_stay_distinct_when_rounding_would_collide():
     edges = [1.2345, 1.2346, 1.2347, 9.0]
     scheme = make_scheme(pd.Series(edges), bins=edges)
     assert len(set(scheme.labels)) == len(scheme.labels)
+
+
+def test_class_labels_exclude_upper_limit_except_top_class():
+    scheme = make_scheme(pd.Series([1.0, 3.0]), bins=[0, 2, 4, 6])
+    assert scheme.labels == ["under 2", "2 to under 4", "4 and above"]
+
+
+def test_two_class_labels():
+    scheme = make_scheme(pd.Series([1.0, 3.0]), bins=[0, 2, 4])
+    assert scheme.labels == ["under 2", "2 and above"]

@@ -66,6 +66,23 @@ def load_values(path: Path, column: str, name_column: str = DEFAULT_NAME_COLUMN)
     return out.reset_index(drop=True)
 
 
+def class_labels(edges: list[float], fmt) -> list[str]:
+    """Labels for each class. The upper limit is excluded, except in the top class."""
+    n = len(edges) - 1
+    labels = []
+    for i in range(n):
+        lo, hi = fmt(edges[i]), fmt(edges[i + 1])
+        if n == 1:
+            labels.append("all values")
+        elif i == 0:
+            labels.append(f"under {hi}")
+        elif i == n - 1:
+            labels.append(f"{lo} and above")
+        else:
+            labels.append(f"{lo} to under {hi}")
+    return labels
+
+
 def make_scheme(
     values: pd.Series,
     bins: list[float] | None = None,
@@ -99,13 +116,14 @@ def make_scheme(
         if len(edges) < 2:
             raise DataError("All values are identical, so they cannot be classed. Use --bins.")
 
-    labels = [f"{format_number(lo)} to {format_number(hi)}" for lo, hi in zip(edges[:-1], edges[1:])]
-    if len(set(labels)) != len(labels):
-        # Rounding made two classes read the same; show more significant digits.
-        labels = [f"{lo:.6g} to {hi:.6g}" for lo, hi in zip(edges[:-1], edges[1:])]
-    if len(set(labels)) != len(labels):
+    fmt = format_number
+    if len({fmt(e) for e in edges}) != len(edges):
+        # Rounding made two edges read the same; show more significant digits.
+        def fmt(x: float) -> str:
+            return f"{x:.6g}"
+    if len({fmt(e) for e in edges}) != len(edges):
         raise DataError("Class edges are too close to label distinctly. Use --bins with wider spacing.")
-    return Scheme(edges=edges, labels=labels)
+    return Scheme(edges=edges, labels=class_labels(edges, fmt))
 
 
 def assign(values: pd.Series, scheme: Scheme) -> pd.Series:
